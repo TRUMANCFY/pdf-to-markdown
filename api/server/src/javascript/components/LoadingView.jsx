@@ -12,15 +12,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = 'bundle.worker.js';
 
 // Parses the PDF pages and displays progress
 export default class LoadingView extends React.Component {
-
-    static propTypes = {
-        fileBuffer: React.PropTypes.object.isRequired,
-        storePdfPagesFunction: React.PropTypes.func.isRequired,
-    };
-
-    constructor(props) {
-        super(props);
-
+    constructor() {
         const progress = new Progress({
             stages: [
                 new ProgressStage('Parsing Metadata', 2),
@@ -126,7 +118,6 @@ export default class LoadingView extends React.Component {
                             //trigger resolving of fonts
                             const fontId = item.fontName;
                             if (!self.state.fontIds.has(fontId) && fontId.startsWith('g_d0')) {
-                                console.log(self.state.document)
                                 self.state.document.transport.commonObjs.get(fontId, function(font) {
                                     self.fontParsed(fontId, font);
                                 });

@@ -38,7 +38,6 @@ export default class ResultView extends React.Component {
                 text += item + '\n';
             });
         });
-        console.log(text)
         this.state = {
             preview: true,
             text: text
