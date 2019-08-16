@@ -1,21 +1,3 @@
-// import CalculateGlobalStats from 'javascript/models/transformations/textitem/CalculateGlobalStats.jsx';
-
-// import CompactLines from 'javascript/models/transformations/lineitem/CompactLines.jsx';
-// import RemoveRepetitiveElements from 'javascript/models/transformations/lineitem/RemoveRepetitiveElements.jsx'
-// import VerticalToHorizontal from 'javascript/models/transformations/lineitem/VerticalToHorizontal.jsx';
-// import DetectTOC from 'javascript/models/transformations/lineitem/DetectTOC.jsx'
-// import DetectListItems from 'javascript/models/transformations/lineitem/DetectListItems.jsx'
-// import DetectHeaders from 'javascript/models/transformations/lineitem/DetectHeaders.jsx'
-
-// import GatherBlocks from 'javascript/models/transformations/textitemblock/GatherBlocks.jsx'
-// import DetectCodeQuoteBlocks from 'javascript/models/transformations/textitemblock/DetectCodeQuoteBlocks.jsx'
-// import DetectListLevels from 'javascript/models/transformations/textitemblock/DetectListLevels.jsx'
-// import ToTextBlocks from 'javascript/models/transformations/ToTextBlocks.jsx';
-// import ToMarkdown from 'javascript/models/transformations/ToMarkdown.jsx'
-
-import React from 'react';
-import FaCheck from 'react-icons/lib/fa/check'
-
 import pdfjs from 'pdfjs-dist';
 import { Line } from 'rc-progress';
 
@@ -93,13 +75,12 @@ export default class Parser {
             new ToMarkdown()];
     }
 
-    async readBuffer(filePath) {
-        var buffer = fs.readFileSync(filePath, null).buffer;
+    async readBuffer(buffer) {
+        // var buffer = fs.readFileSync(filePath, null).buffer;
         this.fileBuffer = buffer;
         console.log('buffer update')
 
-        var pages = await this.parse()
-        return pages
+        await this.parse()
     }
 
     // cleanBuffer() {
@@ -158,13 +139,13 @@ export default class Parser {
         }
     }
 
-    parse() {
+    async parse() {
         const fontStage = this.state.progress.fontStage();
         var self = this;
         
         console.log(self.fileBuffer)
 
-        pdfjs.getDocument({
+        await pdfjs.getDocument({
             data: self.fileBuffer,
             cMapUrl: 'cmaps/',
             cMapPacked: true
@@ -187,7 +168,6 @@ export default class Parser {
                             //trigger resolving of fonts
                             const fontId = item.fontName;
                             if (!self.state.fontIds.has(fontId) && fontId.startsWith('g_d0')) {
-                                // console.log(this.state.document._transport)
                                 self.state.document._transport.commonObjs.get(fontId, function(font) {
                                     self.fontParsed(fontId, font);
                                 });
@@ -216,15 +196,13 @@ export default class Parser {
                 });
             }
         }).then(
-            () => {
-                //console.log(self.state.pages)
-                self.toText()
+            async () => {
+                this.text = await self.toText()
             }
-        );
+        )
     }
 
     toText() {
-        console.log(this)
         var parseResult = new ParseResult({
             pages: this.state.pages
         });
@@ -243,7 +221,7 @@ export default class Parser {
                 text += item + '\n';
             });
         });
-        console.log(text)
+        return text
     }
 }
 

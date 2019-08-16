@@ -14,6 +14,7 @@
     "babel-polyfill": "^6.26.0",
     "bootstrap": "^3.3.7",
     "commander": "^2.19.0",
+    "cors": "^2.8.5",
     "enumify": "^1.0.4",
     "express": "^4.16.4",
     "formidable": "^1.2.1",
